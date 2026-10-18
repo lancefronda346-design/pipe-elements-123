@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES Review Center - Pipe Elements No. 1 Quiz Bee</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --correct: #22c55e;
+            --incorrect: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin: 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin: 0 0 5px 0;
+        }
+
+        header h2 {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .question-container {
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .option-item:hover {
+            background: #e2e8f0;
+            border-color: var(--secondary);
+        }
+
+        .option-item.selected {
+            background: #dbeafe;
+            border-color: var(--secondary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .option-item.correct {
+            background: #dcfce7;
+            border-color: var(--correct);
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .option-item.incorrect {
+            background: #fee2e2;
+            border-color: var(--incorrect);
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .score-card {
+            text-align: center;
+            display: none;
+        }
+
+        .score-card h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .score-card p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ENGR. ESTOQUE REVIEW CENTER</h1>
+        <h2>Pipe Elements No. 1 (Q1 - Q199)</h2>
+    </header>
+
+    <div id="quiz-section">
+        <div class="quiz-info">
+            <span id="question-counter">Question 1 of 199</span>
+            <span id="score-keeper">Score: 0</span>
+        </div>
+
+        <div class="question-container">
+            <div id="question-text" class="question-text">Loading question...</div>
+            <ul id="options-list" class="options-list">
+                <!-- Options injected by JS -->
+            </ul>
+        </div>
+
+        <div class="btn-container">
+            <span id="feedback-msg" style="font-weight: 600;"></span>
+            <button id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+        </div>
+    </div>
+
+    <div id="score-section" class="score-card">
+        <h2>Quiz Completed! 🎉</h2>
+        <p id="final-score-text">Your Score: 0 / 199</p>
+        <button onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { q: "Is the most common dryer used which consist of rotating cylinder inside which the materials flow while getting in contact with hot gas.", opts: ["Tower dryer", "Centrifugal dryer", "Trey dryer", "Rotary dryer"], ans: "D" },
+        { q: "Is the ratio of the mass of water-vapor in air and the mass of air if it is saturated is called:", opts: ["Humidity ratio", "Mass ratio", "Vapor ratio", "Relative humidity"], ans: "D" },
+        { q: "The hands feel painfully cold when the skin temperature reaches", opts: ["8 deg C", "10 deg C", "12 deg C", "14 deg C"], ans: "B" },
+        { q: "The refrigerant used in steam jet cooling is:", opts: ["Steam", "R-11", "Ammonia", "Water"], ans: "D" },
+        { q: "The total heat of the air is a function of", opts: ["WB temperature", "DP temperature", "DB temperature", "WB depression"], ans: "A" },
+        { q: "Boiling point of Freon-12 at atmospheric pressure is:", opts: ["21 deg F", "15 deg F", "5 deg F", "28 deg F"], ans: "A" },
+        { q: "Which of the following is NOT a type of water cooled condenser in refrigeration?", opts: ["Double pipe", "Double shell", "Shell and coil", "Shell and tube"], ans: "B" },
+        { q: "Component of absorption refrigeration system in which the solution is cooled by cooling water.", opts: ["Rectifier", "Generator", "Evaporator", "Absorber"], ans: "D" },
+        { q: "Cascade refrigeration cycle is often used in industrial process where objects must be cooled to temperature below:", opts: ["-46 deg C", "-56 deg C", "-66 deg C", "-76 deg C"], ans: "A" },
+        { q: "Type of refrigerant control designed to maintain a pressure difference while the compressor is operating.", opts: ["Thermostatic expansion valve", "Using low side float flooded system", "Automatic expansion valve", "Capillary tube"], ans: "D" },
+        { q: "As a rule of thumb, for a specified amount of compressed air, the power consumption of the compressor decreases by ____ for each 3 deg C drop in the temperature inlet air to the compressor.", opts: ["1 percent", "1.5 percent", "2 percent", "2.5 percent"], ans: "A" },
+        { q: "Modern way of detecting air compressor leak is by using", opts: ["Soup and water", "Air leak detector", "Acoustic leak detector", "Ammonia leak detector"], ans: "C" },
+        { q: "For foundation of stacks, the maximum pressure on the soil is equal to the pressure due to the weight and the", opts: ["Soil movement", "Wind movement", "Ground movement", "Engine movement"], ans: "B" },
+        { q: "Foundation bolts of specified size should be used and surrounded by a pipe sleeve with an inside diameter of at least", opts: ["3 times the diameter of engine bolt", "2 times the diameter of engine bolt", "3 times the diameter of anchor bolt", "2 times the diameter of anchor bolt"], ans: "C" },
+        { q: "For multi stage compression of an ideal Brayton cycle, the back ratio will", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "B" },
+        { q: "Type of turbine that has a specific speed below 5.", opts: ["Impulse turbine", "Propeller turbine", "Francis turbine", "Deriaz turbine"], ans: "A" },
+        { q: "A high discharge type of turbine", opts: ["Impulse turbine", "Propeller turbine", "Francis turbine", "Deriaz turbine"], ans: "B" },
+        { q: "Use to minimize the speed rise due to a sudden load rejection", opts: ["Needle valve", "Wicket gate shut-off", "Shut-off valve", "Jet deflector"], ans: "D" },
+        { q: "Is the speed of a turbine when the head on the turbine is one meter", opts: ["Specific speed", "Rated speed", "Utilized speed", "Unit speed"], ans: "D" },
+        { q: "Is a fluid property which refers to the intermolecular attraction by which the separate particles of the fluid arc held together.", opts: ["Cohesion", "Adhesion", "Surface tension", "Hypertension"], ans: "A" },
+        { q: "Which of the following is NOT the cause of black smoke in diesel engine?", opts: ["Fuel valve open too long", "High compression pressure", "Carbon in exhaust pipe", "Overload on engine"], ans: "B" },
+        { q: "Which of the following is not a method of starting a diesel engine?", opts: ["Manual: rope, crank and kick", "Electric (battery)", "Compressed air", "Using another generator"], ans: "D" },
+        { q: "Two-stroke engine performs ____ to complete one cycle.", opts: ["Suction and discharge stroke", "Compression and power stroke", "Power and exhaust stroke", "Suction and exhaust stroke"], ans: "B" },
+        { q: "A type of geothermal plant used when there is a presence of brine extracted from underground", opts: ["Dry geothermal plant", "Double-flash geothermal", "Single flash geothermal plant", "Binary geothermal plant"], ans: "D" },
+        { q: "Is the most important safety device on the power boiler.", opts: ["Check valve", "Gate valve", "Safety valve", "Globe valve"], ans: "C" },
+        { q: "During hydrostatic test, the safety valves should be", opts: ["Removed", "Open", "Closed", "Partially closed"], ans: "A" },
+        { q: "Where deaerating heaters are not employed, it is recommended that the temperature of the feed water be not less than", opts: ["197 deg C", "102 deg C", "104 deg C", "106 deg C"], ans: "A" },
+        { q: "Is a reaction during which chemical energy is released in the form of heat.", opts: ["Cosmic reaction", "Ethnic reaction", "Endothermic reaction", "Exothermic reaction"], ans: "D" },
+        { q: "By reheating the steam in an ideal Ranking cycle the heat rejected will.", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "A" },
+        { q: "By increasing the boiler pressure in Rankine cycle the moisture content at boiler exit will.", opts: ["Increase", "Decrease", "Remains the same", "None of those"], ans: "A" },
+        { q: "Presently the highest steam temperature allowed at the turbine inlet is about", opts: ["340 deg C", "520 deg C", "620 deg C", "1020 deg C"], ans: "C" },
+        { q: "Two most common gases employed in Stirling and Ericsson cycles are.", opts: ["Air and helium", "Oxygen and helium", "Hydrogen and helium", "Nitrogen and helium"], ans: "C" },
+        { q: "In most common design of gas turbine, the pressure ratio ranges from", opts: ["10 to 12", "11 to 16", "12 to 18", "15 to 20"], ans: "B" },
+        { q: "In brayton cycle, the heat is transformed during what process?", opts: ["Constant temperature", "Isentropic process", "Isobaric process", "Isochoric process"], ans: "C" },
+        { q: "The fuel injection process in diesel engine starts when the piston", opts: ["Is at the TDC", "Leaving TDC", "Approaches TDC", "Halfway of the stroke"], ans: "C" },
+        { q: "If the cut-off ratio of diesel cycle increases, the cycle efficiency will", opts: ["Decrease", "Increase", "Remains the same", "None of these"], ans: "A" },
+        { q: "The fuel used in a power plant that is used during peak periods.", opts: ["Gas", "Solid", "Liquid", "None of these"], ans: "C" },
+        { q: "Typical compression ratio of Otto cycle is", opts: ["6", "8", "10", "12"], ans: "B" },
+        { q: "If Joule Thomson coefficient is equal to zero, then the process will become", opts: ["Isentropic", "Isenthalpic", "Isobaric", "Isothermal"], ans: "D" },
+        { q: "If the fluid passed through a nozzle its entropy will:", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "C" },
+        { q: "Refrigerant consisting of mixtures of two or more different chemical compounds, often used individuals as refrigerant for other applications.", opts: ["Suspension", "Compound reaction", "Blends", "Mixing of refrigerant"], ans: "C" },
+        { q: "Pairs of mating stop valves that allow sections of a system to be joined before opening these valves or separated after closing them", opts: ["Check valve", "Gate valve", "Safety valve", "Companion valve"], ans: "D" },
+        { q: "An enclosed passageway that limits travel to a single path.", opts: ["Corridor", "Hallway", "Lobby", "Tunnel"], ans: "A" },
+        { q: "For immediate dangerous to life or health (IDHL), the maximum concentration from which unprotected persons are able to escape within without escape-impairing symptoms or irreversible health.", opts: ["15 min", "1 min", "20 min", "30 min"], ans: "D" },
+        { q: "The volume as determined from internal dimensions of the container with no allowance for the volume of internal parts.", opts: ["Internal allowance", "Internal gross volume", "Internal interference volume", "Internal fits volume"], ans: "B" },
+        { q: "A waiting room or large hallway serving as a waiting room", opts: ["Terrace", "Rest room", "Compound room", "Lobby"], ans: "D" },
+        { q: "A continuous and unobstructed path of travel from any point in a building or structure to a public way", opts: ["Average of aggress", "Mean of aggress", "Hallway of aggress", "Pathway of aggress"], ans: "B" },
+        { q: "Any device or portion of the equipment used to increase refrigerant pressure", opts: ["Pressure relief device", "Pressure-imposing element", "Pressure lift device", "Pressure limiting device"], ans: "B" },
+        { q: "The quantity of refrigerant stored at some point is the refrigeration system for operational, service, or standby purposes.", opts: ["Pressure vessel", "Pumpdown charge", "Liquid receiver", "Accumulator"], ans: "B" },
+        { q: "Secondary refrigerant is a liquid used for the transmission of heat, without a change of state, and having no flash point as determined from ASTM ____ or a flash point above ____.", opts: ["150 F", "160 F", "180 F", "200 F"], ans: "A" },
+        { q: "A service valve for dual pressure-relief devices that allows using one device while isolating the other from the system, maintaining one valve in operation at all times.", opts: ["Three-way valve", "Two-way valve", "One-way valve", "Four-way valve"], ans: "A" },
+        { q: "Tubing that is unenclosed and therefore exposed to crushing, abrasion, puncture, or similar damage after installation.", opts: ["Protected tubing", "Bare tubing", "Open tubing", "Unprotected tubing"], ans: "D" },
+        { q: "Refers to blends comprising multiple components of different volatile that, when used in refrigeration cycles, change volumetric composition and saturation temperature as they evaporate (boil) or condense at constant pressure.", opts: ["Zeolite", "Blending", "Composition", "Zeotropic"], ans: "D" },
+        { q: "Is a premises or that of a premise from which, because they are disabled, debilitated, or confined, occupants cannot readily leave without the assistance of others", opts: ["Institutional occupancy", "Public assembly occupancy", "Residential occupancy", "Commercial occupancy"], ans: "A" },
+        { q: "Is one in which a secondary coolant is in direct contact with the air or other substance to be cooled or heated.", opts: ["Double indirect open spray system", "Indirect open spray system", "Indirect closed system", "Indirected, verted closed system"], ans: "B" },
+        { q: "Refrigerant number R-744 is", opts: ["Butane", "Carbon monoxide", "Propane", "Carbon dioxide"], ans: "D" },
+        { q: "Refrigerant number R-1150 is", opts: ["Propylene", "Ethene", "Ethane", "Methyl formate"], ans: "B" },
+        { q: "Refrigerant R-40 is", opts: ["Chlorodifluoromethane", "Difluoromenthane", "Ammonia", "Chloromethane"], ans: "D" },
+        { q: "When the air duct system serves several enclosed spaces, the permissible quantity of refrigerant in the system shall not exceed the amount determined by using the total volume of those spaces in which the airflow cannot be reduced to less than ____ of its maximum when the fan is operating", opts: ["One-quarter", "One half-quarter", "Three-quarter", "One-fourth-quarter"], ans: "A" },
+        { q: "The space above a suspended ceiling shall not be included in calculating the permissible quantity of refrigerant in the system unless such space is continuous and is part of the air return system", opts: ["Partition", "Plenums", "Separator", "Plate divider"], ans: "B" },
+        { q: "Which of the following is not a possible location of service valve?", opts: ["Suction of compressor", "Discharge of compressor", "Outlet of liquid receiver", "Outlet of condenser"], ans: "D" },
+        { q: "A coil in series with evaporator that is use to prevent the liquid refrigerant entering the compressor", opts: ["Accumulator", "Liquid superheater", "Drier loop", "Liquid suction heat exchanger"], ans: "C" },
+        { q: "A type of valve connected from discharge of compressor directly to suction that is normally closed and will open automatically only if there is high discharge pressure", opts: ["Check valve", "Solenoid valve", "King valve", "Relief valve"], ans: "B" },
+        { q: "Use to increase the capacity of condenser", opts: ["Water regulating valve", "Desuperheating coils", "Liquid-suction heat exchanger", "Condenser heating coils"], ans: "B" },
+        { q: "Is use to subcooled the refrigerant from the condenser", opts: ["Liquid subcooler", "Condenser subcooler", "Desuperheating coils", "Liquid receiver"], ans: "A" },
+        { q: "Which of the following is NOT a part of low pressure side in refrigeration system?", opts: ["Compressor", "Condenser", "Liquid line", "Suction line"], ans: "C" },
+        { q: "Which of the following is NOT a part of high pressure side in refrigeration system?", opts: ["Compressor", "Condenser", "Liquid line", "Suction line"], ans: "D" },
+        { q: "Which of the following is NOT a part of condensing unit?", opts: ["Compressor", "Discharge line", "Condenser", "Liquid line"], ans: "D" },
+        { q: "By subcooling the refrigerant in refrigeration system, the compressor power per unit mass will", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "C" },
+        { q: "Superheating the refrigerant in refrigeration system without useful cooling, the refrigeration effect per unit mass will", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "C" },
+        { q: "By subcooling the refrigerant in refrigeration system, the specific volume at compressor suction will", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "C" },
+        { q: "Pressure loss due to friction at the condenser, the compressor power per unit mass will", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "C" },
+        { q: "Which of the following is NOT a type of air-cooled condenser?", opts: ["Shell and tube", "Natural draft", "Forced draft", "Induced draft"], ans: "A" },
+        { q: "A type of refrigerant control typically used in household refrigeration", opts: ["Thermostatic expansion valve", "Automatic expansion valve", "Capillary tube", "High side float"], ans: "C" },
+        { q: "Type of condenser that operates like a cooling water", opts: ["Air-cooled condenser", "Evaporative condenser", "Shell and tube condenser", "Water cooled condenser"], ans: "B" },
+        { q: "The major problem of heat pump is", opts: ["Refrigerant used", "Outside air", "Supply air", "Frosting"], ans: "D" },
+        { q: "Dominant refrigerant used in commercial refrigeration system", opts: ["R11", "R22", "R12", "R502"], ans: "D" },
+        { q: "Cascade refrigerant system are connected in", opts: ["Series", "Parallel", "Series-parallel", "Parallel"], ans: "A" },
+        { q: "Is use to heat up the solution partially before entering the generator in absorption refrigeration system", opts: ["Rectifier", "Absorber", "Regenerator", "Pump"], ans: "C" },
+        { q: "The COP of actual absorption refrigeration system is usually", opts: ["Less than 1", "Less than 2", "Less than 3", "Less than 4"], ans: "A" },
+        { q: "Sight glass is often located at", opts: ["Discharge line", "Liquid line", "Between condenser and liquid receiver", "Suction line"], ans: "B" },
+        { q: "Use to detects a vibration in current caused by the ionization of decomposed refrigerant between two opposite charged platinum electrodes", opts: ["Electronic detector", "Halide torch", "Bubble method", "Pressurizing"], ans: "A" },
+        { q: "The ability of oil to mix with refrigerants", opts: ["Carbonization", "Purging", "Mixing", "Miscibility"], ans: "D" },
+        { q: "Joints and all refrigerants-containing parts of a refrigerating system located in an air duct carrying conditioned air to and from an occupied space shall be constructed to withstand without leakage into the airstream, a temperature of ____ pressure:", opts: ["550 F", "600 F", "650 F", "700 F"], ans: "D" },
+        { q: "Refrigerant piping crossing an open space that affords passageway in any building shall be not loss than ____ above the floor unless the piping is located against the ceiling of such space and is permitted by the authority having jurisdiction", opts: ["2.2 m", "3.2 m", "4.2 m", "5.2 m"], ans: "A" },
+        { q: "Methyl chloride shall not be in contact with", opts: ["Aluminum", "Zinc", "Magnesium", "All of these"], ans: "D" },
+        { q: "Shall not be in contact with any halogenated refrigerants", opts: ["Aluminum", "Zinc", "Magnesium", "All of these"], ans: "C" },
+        { q: "Are suitable for use in ammonia system", opts: ["Copper", "Aluminum and its alloy", "Plastic", "Cast iron"], ans: "B" },
+        { q: "In a pressure-relief device is used to protect a pressure vessel having an inside dimension of 6 in or less, the ultimate strength of the pressure vessel so protected shall be sufficient to withstand a pressure at least ____ the design pressure", opts: ["2 times", "3 times", "4 times", "5 times"], ans: "B" },
+        { q: "Seats and discs shall be limited in distortion, by pressure or other cause, to set pressure change of not more than ____ in a span of five years.", opts: ["1%", "5%", "10%", "50%"], ans: "B" },
+        { q: "Liquid receivers, if used or parts of a system designed to receive the refrigerant change during pumpdown charge. The liquid shall not occupy more than ____ when temperature of the refrigerant is 90F", opts: ["80%", "85%", "90%", "95%"], ans: "C" },
+        { q: "The discharge line (B4) shall be vented to the atmosphere through a ____ fitted to its upper extremity.", opts: ["Nozzle", "Convergent-divergent nozzle", "Pipe", "Diffuser"], ans: "D" },
+        { q: "Convert fossil fuels into the shaft work", opts: ["Nuclear power plant", "Gas turbine power plant", "Dendrothermal power plant", "Thermal power plant"], ans: "D" },
+        { q: "Ultimate strength drops by 30% as steam temperature raises from ____ for unalloyed steel", opts: ["300 to 400 c", "400 to 500 c", "600 to 700 c", "700 to 800 c"], ans: "B" },
+        { q: "Recent practice limits steam temperature to", opts: ["438 C", "538 C", "648 C", "738 C"], ans: "A" },
+        { q: "In a closed feed water heater, the feed water pass through", opts: ["Inside the tube", "Outside the tube", "Inside the shell", "Outside the shell"], ans: "A" },
+        { q: "Is use if extracted steam upon condensation gets subcoole", opts: ["Trap", "Deaerator", "Filter", "Drain cooler"], ans: "D" },
+        { q: "Needs only single pump regardless of number of heaters", opts: ["Open heater", "Closed heater", "Mono heater", "Regenerative heater"], ans: "B" },
+        { q: "Is also known as deaerator", opts: ["Open heater", "Closed heater", "Reheat heater", "Regenerative heater"], ans: "A" },
+        { q: "Dissolve gases like ____ makes water corrosive react with metal to form iron oxide", opts: ["O2 and N2", "O2 and CO", "O2 and CO2", "N2 and SO2"], ans: "C" },
+        { q: "A cycle typically used in paper mills, textile mills, chemical factories, sugar factories and rice mills", opts: ["Cogeneration cycle", "Combined cycles", "By-products cycle", "Cascading cycle"], ans: "A" },
+        { q: "When process steam is basic need and power is byproduct, this cycle is known as", opts: ["Cogeneration cycle", "Combined cycle", "By-product cycle", "Cascading cycle"], ans: "C" },
+        { q: "A type of turbine employed where steam continuously extracted for process heating", opts: ["Back-pressure turbine", "Gas turbine", "Steam turbine", "Passout turbine"], ans: "D" },
+        { q: "Which of the following is used for binary cycle power generation for high temperature application?", opts: ["Mercury", "Sodium", "Potassium", "All of these"], ans: "D" },
+        { q: "Critical temperature of mercury is", opts: ["1160 deg C", "1260 deg C", "1360 deg C", "1460 deg C"], ans: "D" },
+        { q: "Critical pressure of mercury is", opts: ["100 MPa", "108 MPa", "128 MPa", "158 MPa"], ans: "B" },
+        { q: "Method used in converting heat directly to electricity by magnetism", opts: ["Electromagnetic induction", "Magnetodynamic", "Magnetohydrodynamic", "Thermoelectric"], ans: "C" },
+        { q: "Which of the following is not a material used for thermoelectric elements?", opts: ["Bismuth telluride", "Lead telluride", "Zinc telluride", "Germanium"], ans: "C" },
+        { q: "A type of coal formed after anthracite", opts: ["Lignite", "Bituminous", "Peat", "Graphite"], ans: "D" },
+        { q: "Which of the following is lowest grade of coal?", opts: ["Lignite", "Sub-bituminous", "Bituminous", "Anthracite"], ans: "B" },
+        { q: "Which of the following helps in the ignition of coal?", opts: ["Moisture", "Ash", "Fixed carbon", "Volatile matter"], ans: "D" },
+        { q: "Is the ratio of fixed carbon and volatile matter.", opts: ["Air-fuel ratio", "Fuel ratio", "Combustion ratio", "Carbon-volatile ratio"], ans: "B" },
+        { q: "A suspension of a finely divide fluid in another.", opts: ["Filtration", "Floatation", "Emulsion", "Separation"], ans: "C" },
+        { q: "Contains 90% gasoline and 10% ethanol.", opts: ["Gasohol", "Gasonol", "Gasothanol", "Gasethanol"], ans: "A" },
+        { q: "Process used commercially in coal liquefaction.", opts: ["Tropsch process", "Fisher process", "Fisher-tropsch process", "Mitch-tropsch process"], ans: "C" },
+        { q: "Is an organic matter produced by plants in both land and water.", opts: ["Bio-ethanol", "Biomass", "Petroleum", "Biogradable"], ans: "B" },
+        { q: "In thermal power plant, induced draft fans are located at the", opts: ["Exit of furnace", "Foot of the stack", "Above the stock", "Top of the stack"], ans: "B" },
+        { q: "Known as drum less boiler.", opts: ["La Mont boiler", "Fire tube boiler", "Force circulation boiler", "Once-through boiler"], ans: "D" },
+        { q: "Reduces the steam temperature by spraying low temperature water from boiler drum.", opts: ["Reheater", "Preheater", "Desuperheater", "Superheater"], ans: "C" },
+        { q: "Carbon dioxide can be removed by:", opts: ["Deaeration", "Aeration", "Evaporation", "Vaporization"], ans: "B" },
+        { q: "Is often used to absorb silica from water.", opts: ["Sorbent", "Rectifier", "Silica gel", "Magnesium hydroxide"], ans: "D" },
+        { q: "Presence of excess hydrogen ions makes the water", opts: ["Acidic", "Alkalinity", "Base", "Hydroxicity"], ans: "A" },
+        { q: "PH of water varies with", opts: ["Pressure", "Temperature", "Density", "Volume"], ans: "B" },
+        { q: "Ph value of ____ is usually maintained for boiler water to minimized corrosion.", opts: ["8.5", "9.5", "10.5", "11.5"], ans: "C" },
+        { q: "What type of turbine that has a degree of reaction of ½?", opts: ["Impulse turbine", "Reaction turbine", "Parsons turbine", "Deriaz turbine"], ans: "C" },
+        { q: "Tranquil flow must always occur", opts: ["Above the normal depth", "Above the critical depth", "Below the normal depth", "Below the critical depth"], ans: "B" },
+        { q: "Which of the following head loss coefficient among the following types of entrance?", opts: ["Bell mouth", "Square edge", "Reentrant", "It depends"], ans: "C" },
+        { q: "What waste treatment method involves ____ of algae from stabilization pond effluents?", opts: ["Sedimentation", "Floatation", "Filtration", "Microscreening"], ans: "D" },
+        { q: "The number of nozzles will depend on the quantity of steam required by the turbine. If nozzles occupy the entire arc of the ring, the turbine is said to have:", opts: ["Partially full peripheral admission", "One-half peripheral admission", "Maximum peripheral admission", "Full peripheral admission"], ans: "D" },
+        { q: "Tandem compound units may also have two low-pressure castings that produces:", opts: ["Single flow", "Double flow", "Triple flow", "Quadruple flow"], ans: "B" },
+        { q: "A type of turbine used for driving pumps, fans, and other auxiliaries in power plant commonly operate at exhaust pressure approximating atmospheric.", opts: ["Tandem compound turbine", "Passout turbine", "Cross-compound turbine", "Back pressure turbine"], ans: "D" },
+        { q: "A governor with 0% regulation is termed as:", opts: ["Isochronous governor", "Synchronous governor", "Isenchronous governor", "Isobarnous governor"], ans: "A" },
+        { q: "The speed regulation for most turbine-generators is adjustable from:", opts: ["2 to 6%", "4 to 8%", "6 to 10%", "8 to 12%"], ans: "A" },
+        { q: "Poppet valves of steam turbine are used for extraction pressure of:", opts: ["20 to 120 psig", "20 to 150 psig", "20 to 130 psig", "20 to 140 psig"], ans: "B" },
+        { q: "When both bearings of steam engines are on one side of the of the connecting rod, the engine is referred to as:", opts: ["Center-crank engine", "Side crank engine", "Under crank engine", "Standard crank engine"], ans: "B" },
+        { q: "When the valve in steam engine is in mid-position of its travel, it will cover the steam port by an amount known", opts: ["Steam lap", "Partial lap", "Full lap", "Angular lap"], ans: "A" },
+        { q: "A type of governor in steam engine that do not control the actual admission of steam to the cylinder but controls the pressure of the steam.", opts: ["Flyball governor", "Variable cut-off governor", "Throttling governor", "Shaft governor"], ans: "C" },
+        { q: "By inter-cooling using two stage compressor of Brayton cycle, the backwork ratio will:", opts: ["Increase", "Decrease", "Remains constant", "None of these"], ans: "B" },
+        { q: "On dynamic similitude, the relation which represents the ratio of inertia force to pressure force is:", opts: ["Froude number", "Cauchy number", "Euler number", "Reynolds number"], ans: "C" },
+        { q: "What is the maximum velocity in a sewer flowing full?", opts: ["0.6 m/sec", "0.9 m/sec", "1.2 m/sec", "1.8 m/sec"], ans: "A" },
+        { q: "A temporary structure constructed to exclude water from the side of the foundation during its excavation and construction is called.", opts: ["Calsson", "Retaining wall", "Coffer dam", "Earth dam"], ans: "C" },
+        { q: "Which is not a physical characteristic of water?", opts: ["Total suspended and dissolve solids", "Tubidity", "Color", "Hardness"], ans: "D" },
+        { q: "Which dam is best for weak foundation?", opts: ["Gravity", "Arch", "Buttress", "Earth"], ans: "C" },
+        { q: "What is the volume of water which will drain freely from the aquifer?", opts: ["Specific yield", "Reservoir yield", "Safe yield", "Secondary yield"], ans: "A" },
+        { q: "What is the line defined by the water level in a group of artesian wells?", opts: ["Water table", "Piezometric surface", "Specific yield", "All of the above"], ans: "B" },
+        { q: "Select the one that is a positive indication of pollution of a river.", opts: ["Acidity", "Oxygen content", "Chloride content", "Nitrite content"], ans: "C" },
+        { q: "The cooling water is made to fall in series of baffles to expose large surface area for steam led from below to come in direct contact.", opts: ["Spray condenser", "Surface condenser", "Jet condenser", "Barometric condenser"], ans: "D" },
+        { q: "Show the variation of river flow (discharge) with time", opts: ["Hydrograph", "Hyctograph", "Mass curve", "Flow duration curve"], ans: "A" },
+        { q: "Is an open channel erected on a surface above the ground.", opts: ["Canal", "Tunnel", "Penstock", "Flume"], ans: "D" },
+        { q: "Type of turbine used up to 300 m head", opts: ["Impulse turbine", "Francis turbine", "Propeller turbine", "Deriaz turbine"], ans: "D" },
+        { q: "A turbine that has a diagonal flow", opts: ["Impulse turbine", "Francis turbine", "Propeller turbine", "Deriaz turbine"], ans: "D" },
+        { q: "Oil is atomized either by air blast or pressure jet at about", opts: ["60 bar", "70 bar", "80 bar", "90 bar"], ans: "B" },
+        { q: "Type of solid injection that use single pump supplies fuel under high pressure to a fuel header.", opts: ["Common rail injection", "Individual pump injection system", "Distributor system", "Single rail injection"], ans: "A" },
+        { q: "Water flow in diesel engine that is caused by density differential.", opts: ["Thermosiphon cooling", "Thermostat cooling", "Pressure water cooling", "Evaporative cooling"], ans: "A" },
+        { q: "Type of lubrication system in diesel engine in which oil from pump is carried to a separate storage tank outside the engine cylinder and used for high capacity engine.", opts: ["Mist lubrication system", "Wet sump lubrication", "Splash system", "Dry sump lubrication system"], ans: "D" },
+        { q: "Produces extreme pressure differentials and violent gas vibration.", opts: ["Vibration", "Detonation", "Explosion", "Knocking"], ans: "B" },
+        { q: "In a spark ignition engine, detonation occurs near the", opts: ["End of combustion", "Middle combustion", "Beginning of combustion", "Beginning of interaction"], ans: "A" },
+        { q: "In a compression ignition engine, the detonation occurs near the", opts: ["End of combustion", "Middle of combustion", "Beginning of combustion", "Beginning of interaction"], ans: "C" },
+        { q: "Morse test is use to measure the ____ of multi-cylinder engine.", opts: ["Break power", "Indicated power", "Friction power", "Motor power"], ans: "B" },
+        { q: "Ignition delay can be minimized by adding ____ to decrease engine knocking.", opts: ["Ethel ether", "Ethyl chloride", "Ethyl nitrate", "Ethyl oxide"], ans: "C" },
+        { q: "For the submerge plane surface, the point on the surface where the resultant force acts is called the", opts: ["Center of buoyancy", "Center of gravity", "Center of pressure", "Center of attraction"], ans: "C" },
+        { q: "At any point in fluid at rest, the pressure is the same in all directions. This principle is known as:", opts: ["Bernoulli principle", "Archimedes principle", "Pascal's law", "Torricelli's law"], ans: "C" },
+        { q: "The hot-wire manometer is used to measure", opts: ["Pressure in gasses", "Pressure in fluids", "Wind velocities at airports", "Gas velocities"], ans: "D" },
+        { q: "The pitot static tube measures", opts: ["The static pressure", "The gage pressure", "The total pressure", "The dynamic pressure"], ans: "A" },
+        { q: "The terminal velocity of a small sphere setting in a viscous fluid varies as the", opts: ["First power of its diameter", "Inverse of fluid viscosity", "Inverse square of the diameter", "Inverse of the diameter"], ans: "B" },
+        { q: "Pressure drag results from", opts: ["Skin friction", "Deformation drag", "Breakdown of potential flow near the forward stagnation point", "Occurrences of wake"], ans: "A" },
+        { q: "The pressure coefficient is the ratio of pressure forces to:", opts: ["Viscous forces", "Inertia forces", "Gravity forces", "Surface tension force"], ans: "B" },
+        { q: "Which instruments is used to measure humidity of the atmosphere continuously?", opts: ["Barograph", "Thermograph", "Hydrograph", "Thermo-hydrograph"], ans: "C" },
+        { q: "Entrance losses between tank and pipe or losses through elbows, fittings and valves are generally expresses as a function of", opts: ["Kinetic energy", "Pipe diameter", "Friction factor", "Volume flow rate"], ans: "A" },
+        { q: "The air that contains no water vapor is called", opts: ["Zero air", "Saturated air", "Dry air", "Humid air"], ans: "C" },
+        { q: "In psychrometric chart, the constant-enthalpy lines coincide with constant-temperature lines at temperature", opts: ["Above 50 deg C", "Below 40 deg C", "Below 50 deg C", "Above 10 deg C"], ans: "C" },
+        { q: "The amount of moisture in air depend on its", opts: ["Pressure", "Volume", "Temperature", "Humidity"], ans: "C" },
+        { q: "The deep body temperature of healthy person is maintained constant at", opts: ["27 deg C", "37 deg C", "47 deg C", "48 deg C"], ans: "B" },
+        { q: "Air motion also plays important role in", opts: ["Surroundings", "Cooling", "Human comfort", "None of these"], ans: "C" },
+        { q: "During simple heating and cooling process has a humidity ratio", opts: ["Increasing", "Decreasing", "Constant", "None of these"], ans: "C" },
+        { q: "The ____ follows a line of constant wet-bulb temperature on the psychrometric chart.", opts: ["Evaporative cooling process", "Condensive cooling process", "Direct cooling process", "None of these"], ans: "A" },
+        { q: "A vapor which is not about to condensate is called a", opts: ["mixture of vapor and liquid", "critical vapor", "Superheated vapor", "None of these"], ans: "C" },
+        { q: "Passing from the solid phase directly into vapor phase is called", opts: ["Condensation", "Fusion", "Sublimation", "None of these"], ans: "C" },
+        { q: "Robert Boyle observed during his experiments with a vacuum chamber that the pressure of gases is inversely proportional to their", opts: ["Temperature", "Pressure", "Volume", "None of these"], ans: "C" },
+        { q: "____ is energy in transition", opts: ["Heat", "Work", "Power", "None of these"], ans: "A" },
+        { q: "Is the mode of energy transfer between a solid surface and the adjacent liquid or gas which is in motion, and it involves combine effects of conduction and fluid motion.", opts: ["Conduction", "Convection", "Radiation", "None of these"], ans: "B" },
+        { q: "Radiation is usually considered as", opts: ["Surface phenomenon", "Surface interaction", "Surface corrosion", "None of these"], ans: "A" },
+        { q: "Work is ____ between the system and the surroundings.", opts: ["Work interaction", "Energy interaction", "Heat interaction", "None of these"], ans: "B" },
+        { q: "Is a process during which the system remains in equilibrium at all times", opts: ["Quasi-equilibrium", "Static equilibrium", "Dynamic equilibrium", "None of these"], ans: "A" },
+        { q: "In the absence of any work interactions between a system and its surroundings, the amount of net heat transfer is equal", opts: ["The change in total energy of a closed system", "To heat and work", "Energy interactions", "none of these"], ans: "A" },
+        { q: "The constant volume and constant pressure specific heats are identical for", opts: ["compressible substance", "incompressible substance", "compressible gas", "none of these"], ans: "B" },
+        { q: "The velocity of fluid is zero at wall and maximum at the center because of the", opts: ["velocity effect", "viscous effect", "temperature effect", "none of these"], ans: "B" },
+        { q: "For steady flow devices, the volume of the control volume is", opts: ["increase", "decrease", "constant", "none of these"], ans: "C" },
+        { q: "Work done in turbine is ____ since it is done by the fluid.", opts: ["Positive", "Negative", "Zero", "None of these"], ans: "A" },
+        { q: "Reheating process in Brayton cycle, the turbine work will", opts: ["Increase", "Decrease", "Remains the same", "None of these"], ans: "A" },
+        { q: "Which of the following is the chemical formula of ethanol?", opts: ["C7H16", "C2H6O", "C7H8", "C6H12"], ans: "B" },
+        { q: "Which of the following is the chemical formula of heptane?", opts: ["C7H16", "C2H6O", "C7H8", "C6H12"], ans: "A" },
+        { q: "Which of the following is the chemical formula of hexene?", opts: ["C7H16", "C2H6O", "C7H8", "C6H12"], ans: "D" },
+        { q: "Which of the following is the chemical formula of toluene?", opts: ["C7H16", "C2H6O", "C7H8", "C6H12"], ans: "C" },
+        { q: "As the air passes through a nozzle, which of the following will increase?", opts: ["Temperature", "Enthalpy", "Internal energy", "Mach number"], ans: "D" },
+        { q: "As the air passes through a diffuser, which of the following will decrease?", opts: ["Temperature", "Enthalpy", "Internal energy", "Mach number"], ans: "D" },
+        { q: "As the air passes through a nozzle, which of the following will decrease?", opts: ["Temperature", "Enthalpy", "Internal energy", "Mach number"], ans: "C" },
+        { q: "As the air passes through a diffuser, which of the following will increase?", opts: ["Density", "Entropy", "Mach number", "Velocity"], ans: "A" },
+        { q: "As the air passes through a diffuser, which of the following will NOT be affected?", opts: ["Density", "Entropy", "Mach number", "Velocity"], ans: "B" }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let selectedOption = null;
+
+    const questionCounter = document.getElementById("question-counter");
+    const scoreKeeper = document.getElementById("score-keeper");
+    const questionText = document.getElementById("question-text");
+    const optionsList = document.getElementById("options-list");
+    const nextBtn = document.getElementById("next-btn");
+    const feedbackMsg = document.getElementById("feedback-msg");
+    const quizSection = document.getElementById("quiz-section");
+    const scoreSection = document.getElementById("score-section");
+    const finalScoreText = document.getElementById("final-score-text");
+
+    const optionLetters = ["A", "B", "C", "D"];
+
+    function loadQuestion() {
+        selectedOption = null;
+        nextBtn.disabled = true;
+        feedbackMsg.textContent = "";
+        
+        const qObj = quizData[currentIdx];
+        questionCounter.textContent = `Question ${currentIdx + 1} of ${quizData.length}`;
+        scoreKeeper.textContent = `Score: ${score}`;
+        questionText.textContent = `${currentIdx + 1}. ${qObj.q}`;
+
+        optionsList.innerHTML = "";
+        qObj.opts.forEach((opt, idx) => {
+            const letter = optionLetters[idx];
+            const li = document.createElement("li");
+            li.className = "option-item";
+            li.innerHTML = `<strong>${letter}.</strong> ${opt}`;
+            li.onclick = () => selectOption(letter, li);
+            optionsList.appendChild(li);
+        });
+    }
+
+    function selectOption(letter, element) {
+        if (selectedOption !== null) return; // Already answered
+        selectedOption = letter;
+
+        const qObj = quizData[currentIdx];
+        const allOpts = optionsList.children;
+
+        for (let i = 0; i < allOpts.length; i++) {
+            const optLetter = optionLetters[i];
+            if (optLetter === qObj.ans) {
+                allOpts[i].classList.add("correct");
+            }
+            if (optLetter === letter && letter !== qObj.ans) {
+                allOpts[i].classList.add("incorrect");
+            }
+        }
+
+        if (letter === qObj.ans) {
+            score++;
+            feedbackMsg.textContent = "Tama! 🎉";
+            feedbackMsg.style.color = "var(--correct)";
+        } else {
+            feedbackMsg.textContent = `Mali! Tamang sagot ay ${qObj.ans}.`;
+            feedbackMsg.style.color = "var(--incorrect)";
+        }
+
+        scoreKeeper.textContent = `Score: ${score}`;
+        nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < quizData.length) {
+            loadQuestion();
+        } else {
+            quizSection.style.display = "none";
+            scoreSection.style.display = "block";
+            finalScoreText.textContent = `Your Total Score: ${score} / ${quizData.length}`;
+        }
+    }
+
+    function restartQuiz() {
+        currentIdx = 0;
+        score = 0;
+        scoreSection.style.display = "none";
+        quizSection.style.display = "block";
+        loadQuestion();
+    }
+
+    // Initial load
+    loadQuestion();
+</script>
+
+</body>
+</html>
